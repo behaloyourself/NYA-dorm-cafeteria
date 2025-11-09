@@ -1,20 +1,21 @@
-import { type User, type InsertUser } from "@shared/schema";
+import { type User, type InsertUser, type Feedback, type InsertFeedback } from "@shared/schema";
 import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  createFeedback(feedback: InsertFeedback): Promise<Feedback>;
+  getAllFeedback(): Promise<Feedback[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
+  private feedbacks: Map<string, Feedback>;
 
   constructor() {
     this.users = new Map();
+    this.feedbacks = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -32,6 +33,23 @@ export class MemStorage implements IStorage {
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
     return user;
+  }
+
+  async createFeedback(insertFeedback: InsertFeedback): Promise<Feedback> {
+    const id = randomUUID();
+    const feedback: Feedback = {
+      ...insertFeedback,
+      id,
+      submittedAt: new Date(),
+    };
+    this.feedbacks.set(id, feedback);
+    return feedback;
+  }
+
+  async getAllFeedback(): Promise<Feedback[]> {
+    return Array.from(this.feedbacks.values()).sort(
+      (a, b) => b.submittedAt.getTime() - a.submittedAt.getTime()
+    );
   }
 }
 

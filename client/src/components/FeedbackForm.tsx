@@ -4,10 +4,33 @@ import { Textarea } from "@/components/ui/textarea";
 import { MessageSquare } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function FeedbackForm() {
   const [feedback, setFeedback] = useState("");
   const { toast } = useToast();
+
+  const submitFeedback = useMutation({
+    mutationFn: async (message: string) => {
+      const res = await apiRequest("POST", "/api/feedback", { message });
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Thanks for your feedback!",
+        description: "We appreciate your input and will review it soon.",
+      });
+      setFeedback("");
+    },
+    onError: () => {
+      toast({
+        title: "Failed to submit feedback",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    },
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,12 +43,7 @@ export default function FeedbackForm() {
       return;
     }
 
-    toast({
-      title: "Thanks for your feedback!",
-      description: "We appreciate your input and will review it soon.",
-    });
-    
-    setFeedback("");
+    submitFeedback.mutate(feedback);
   };
 
   return (
@@ -56,9 +74,10 @@ export default function FeedbackForm() {
               <Button
                 type="submit"
                 size="lg"
+                disabled={submitFeedback.isPending}
                 data-testid="button-submit-feedback"
               >
-                Submit Feedback
+                {submitFeedback.isPending ? "Submitting..." : "Submit Feedback"}
               </Button>
             </form>
           </CardContent>
