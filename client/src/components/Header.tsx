@@ -53,7 +53,7 @@ export default function Header() {
           <div className="flex items-center gap-3">
             <Menu className="w-6 h-6" data-testid="icon-menu" />
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight" data-testid="text-title">
-              Boarding Cafeteria Menu
+              NYA Dorm Menu
             </h1>
           </div>
 
