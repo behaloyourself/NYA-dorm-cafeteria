@@ -2,6 +2,7 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Menu, Moon, Sun } from "lucide-react";
 import { useState, useEffect } from "react";
+import panthersLogo from "@assets/generated_images/Panthers_mascot_logo_ed7075eb.png";
 
 export default function Header() {
   const [location] = useLocation();
@@ -51,7 +52,12 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center gap-3">
-            <Menu className="w-6 h-6" data-testid="icon-menu" />
+            <img 
+              src={panthersLogo} 
+              alt="North Yarmouth Academy Panthers" 
+              className="w-12 h-12 sm:w-14 sm:h-14 object-contain"
+              data-testid="img-panthers-logo"
+            />
             <h1 className="text-xl sm:text-2xl font-bold tracking-tight" data-testid="text-title">
               NYA Dorm Menu
             </h1>
