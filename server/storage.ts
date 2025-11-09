@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Feedback, type InsertFeedback } from "@shared/schema";
+import { type User, type InsertUser, type Feedback, type InsertFeedback, type DessertVote, type InsertDessertVote } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -7,15 +7,19 @@ export interface IStorage {
   createUser(user: InsertUser): Promise<User>;
   createFeedback(feedback: InsertFeedback): Promise<Feedback>;
   getAllFeedback(): Promise<Feedback[]>;
+  createDessertVote(vote: InsertDessertVote): Promise<DessertVote>;
+  getDessertVoteCounts(): Promise<{ dessert: string; count: number }[]>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private feedbacks: Map<string, Feedback>;
+  private dessertVotes: Map<string, DessertVote>;
 
   constructor() {
     this.users = new Map();
     this.feedbacks = new Map();
+    this.dessertVotes = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -50,6 +54,30 @@ export class MemStorage implements IStorage {
     return Array.from(this.feedbacks.values()).sort(
       (a, b) => b.submittedAt.getTime() - a.submittedAt.getTime()
     );
+  }
+
+  async createDessertVote(insertVote: InsertDessertVote): Promise<DessertVote> {
+    const id = randomUUID();
+    const vote: DessertVote = {
+      ...insertVote,
+      id,
+      votedAt: new Date(),
+    };
+    this.dessertVotes.set(id, vote);
+    return vote;
+  }
+
+  async getDessertVoteCounts(): Promise<{ dessert: string; count: number }[]> {
+    const votes = Array.from(this.dessertVotes.values());
+    const counts = new Map<string, number>();
+    
+    votes.forEach(vote => {
+      counts.set(vote.dessertChoice, (counts.get(vote.dessertChoice) || 0) + 1);
+    });
+
+    return Array.from(counts.entries())
+      .map(([dessert, count]) => ({ dessert, count }))
+      .sort((a, b) => b.count - a.count);
   }
 }
 

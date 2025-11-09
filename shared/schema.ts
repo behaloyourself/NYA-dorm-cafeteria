@@ -30,3 +30,17 @@ export const insertFeedbackSchema = createInsertSchema(feedback).omit({
 
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
 export type Feedback = typeof feedback.$inferSelect;
+
+export const dessertVotes = pgTable("dessert_votes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  dessertChoice: text("dessert_choice").notNull(),
+  votedAt: timestamp("voted_at").defaultNow().notNull(),
+});
+
+export const insertDessertVoteSchema = createInsertSchema(dessertVotes).omit({
+  id: true,
+  votedAt: true,
+});
+
+export type InsertDessertVote = z.infer<typeof insertDessertVoteSchema>;
+export type DessertVote = typeof dessertVotes.$inferSelect;
