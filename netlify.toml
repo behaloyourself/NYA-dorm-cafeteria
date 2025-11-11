@@ -1,5 +1,4 @@
 [build]
-  base = "client"
-  command = "npm --prefix client/client ci && npm --prefix client/client run build"
-  publish = "client/client/dist"
-  functions = "client/netlify/functions"
+  base = "."
+  command = "npm install && npm run build"
+  publish = "dist"
